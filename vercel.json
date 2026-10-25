@@ -16,11 +16,14 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "api/index.py"
+      "dest": "/api/index.py"
+    },
+    {
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
-      "dest": "frontend/dist/index.html"
+      "dest": "/index.html"
     }
   ]
 }
