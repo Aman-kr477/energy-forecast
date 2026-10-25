@@ -1,4 +1,4 @@
-__pycache__/
+﻿__pycache__/
 *.pyc
 .pytest_cache/
 .hypothesis/
@@ -7,4 +7,3 @@ dist/
 .env
 .vscode/
 .idea/
-backend/data/*.parquet

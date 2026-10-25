@@ -1,17 +1,13 @@
 ﻿"""
 app/main.py
 ============
-FastAPI application entry point.
+FastAPI application.
 
-Loads data into memory on startup, mounts all routers under /api.
+Deployed as a Vercel serverless function via api/index.py.
+Frontend (Vite/React) is served by Vercel from frontend/dist/.
+Both live on the same domain so no CORS configuration is needed in production.
 
-Deployment split:
-  - Backend  → Heroku (this file)
-  - Frontend → Vercel
-
-CORS is configured to allow the Vercel production domain and the local
-Vite dev server. Set the ALLOWED_ORIGINS env var (comma-separated) to
-add your Vercel URL before deploying.
+For local development, CORS is allowed from the Vite dev server (localhost:5173).
 """
 from __future__ import annotations
 
@@ -31,18 +27,9 @@ logging.basicConfig(
 )
 log = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# CORS: allow Vercel frontend + local dev
-# Add your Vercel URL via  ALLOWED_ORIGINS=https://your-app.vercel.app
-# ---------------------------------------------------------------------------
-_default_origins = "http://localhost:5173,http://localhost:3000"
-_raw = os.environ.get("ALLOWED_ORIGINS", _default_origins)
-ALLOWED_ORIGINS: list[str] = [o.strip() for o in _raw.split(",") if o.strip()]
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load data snapshots before serving any requests."""
     log.info("Loading data snapshots ...")
     data_loader.load()
     log.info("Startup complete.")
@@ -57,14 +44,14 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Allow local Vite dev server. Not needed in Vercel production (same domain).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["http://localhost:5173", "http://localhost:3000"],
     allow_methods=["GET"],
     allow_headers=["*"],
 )
 
-# API routes
 app.include_router(health.router, prefix="/api")
 app.include_router(meta.router, prefix="/api")
 app.include_router(actuals.router, prefix="/api")
