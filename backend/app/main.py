@@ -47,7 +47,7 @@ app = FastAPI(
 # Allow local Vite dev server. Not needed in Vercel production (same domain).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000","https://energy-forecast-2z7m.onrender.com","https://energy-forecast-vpf8.vercel.app/"],
     allow_methods=["GET"],
     allow_headers=["*"],
 )
