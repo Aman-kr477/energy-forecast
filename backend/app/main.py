@@ -1,15 +1,4 @@
-﻿"""
-app/main.py
-============
-FastAPI application.
-
-Deployed as a Vercel serverless function via api/index.py.
-Frontend (Vite/React) is served by Vercel from frontend/dist/.
-Both live on the same domain so no CORS configuration is needed in production.
-
-For local development, CORS is allowed from the Vite dev server (localhost:5173).
-"""
-from __future__ import annotations
+﻿from __future__ import annotations
 
 import logging
 import os
@@ -44,10 +33,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Allow local Vite dev server. Not needed in Vercel production (same domain).
+ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://energy-forecast-vpf8.vercel.app",   # no trailing slash
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000","https://energy-forecast-2z7m.onrender.com","https://energy-forecast-vpf8.vercel.app/"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_methods=["GET"],
     allow_headers=["*"],
 )
