@@ -1,6 +1,6 @@
 ﻿// src/lib/api.ts
-// In production: VITE_API_BASE_URL points to the Render backend.
-// In local dev: empty string uses the Vite proxy to localhost:8000.
+// API_BASE: uses VITE_API_BASE_URL env var if set, otherwise falls back to
+// the hardcoded Render URL. In local dev the Vite proxy handles /api/* calls.
 import type {
   ActualsResponse,
   ErrorDistributionResponse,
@@ -10,13 +10,12 @@ import type {
   MetricsResponse,
 } from "@/types/api";
 
-const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
+const RENDER_URL = "https://energy-forecast-2z7m.onrender.com";
+
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? RENDER_URL).replace(/\/$/, "");
 
 async function get<T>(path: string, params?: Record<string, string>): Promise<T> {
-  const fullUrl = API_BASE
-    ? `${API_BASE}${path}`
-    : path;
-  const url = new URL(fullUrl, window.location.origin);
+  const url = new URL(`${API_BASE}${path}`);
   if (params) Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
   const res = await fetch(url.toString());
   if (!res.ok) {
